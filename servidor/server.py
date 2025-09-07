@@ -1,13 +1,13 @@
 import socket
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import sessionmaker
 import os
 from dotenv import load_dotenv
 import database
 
 # IP e porta do servidor
-IP_LOCAL = "127.0.0.1"
-PORTA_LOCAL = 5005
+IP_LOCAL = os.getenv("ip")
+PORTA_LOCAL = int(os.getenv("porta_server"))
 
 # Mensagem de retorno
 RESPOSTA = b"ok"
