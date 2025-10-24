@@ -21,11 +21,6 @@ logging.basicConfig(
 ipCliente = None
 portaCliente = None
 
-# Bindando o IP e porta do servidor no comando do socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind((IP_LOCAL, PORTA_LOCAL))
-logging.info(f"Servidor iniciado em {IP_LOCAL}:{PORTA_LOCAL}")
-
 # Conexão com o DB
 load_dotenv()
 
@@ -40,35 +35,67 @@ engine = create_engine(
     pool_pre_ping=True, pool_recycle=3600
 )
 
-# Loop para ficar escutando no IP e porta local
-while True:
-    try:
-        # data = mensagem recebida || addr = IP e porta do cliente
-        data, addr = sock.recvfrom(1024)
+# Função para lidar com os requests
+def handle_request(client_socket):
+    request_data = client_socket.recv(1024).decode('utf-8')
+    print(f"Received request:\n{request_data}")
 
-        # Designando o endereço do cliente
-        ipCliente = addr[0]
-        portaCliente = addr[1]
+    log = os.linesep.join([s for s in request_data.splitlines() if s])
+    request_lines = request_data.split('\n')
 
-        # Enviando informacoes para o banco de dados
-        nova_mensagem = database.mensagens(
-        Mensagem = data.decode('utf-8'),
-        IP_Cliente = ipCliente,
-        Porta_Cliente = portaCliente
-        )
+    if request_lines:
 
-        Session = sessionmaker(bind=engine)
-        session = Session()
+        first_line = request_lines[0].split()
 
-        session.add(nova_mensagem)
-        session.commit()
-        session.close()
+        if len(first_line) > 1:
+            method = first_line[0]
+            path = first_line[1]
 
-        # Imprimindo a mensagem e IP e porta do cliente no console
-        logging.info(f"Mensagem recebida: {data.decode('utf-8')} de {ipCliente}:{portaCliente}")
+            # Rotas do servidor
+            if method == 'GET' and path == '/':
+                response_body = "<h1>Funcionando</h1>"
+                response_headers = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
+                response = (response_headers + f"Content-Length: {len(response_body.encode('utf-8'))}\r\n\r\n" + response_body).encode('utf-8')
+                for i in range(len(request_lines)):
+                    logging.info(f"Received request:\n{request_lines[i]}")
+            elif method == 'GET' and path == '/teste':
+                response_body = "<h1>TESTE</h1>"
+                response_headers = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
+                response = (response_headers + f"Content-Length: {len(response_body.encode('utf-8'))}\r\n\r\n" + response_body).encode('utf-8')
+                for i in range(len(request_lines)):
+                    logging.info(f"Received request:\n{request_lines[i]}")
+            else:
+                response_body = "<h1>404 Not Found</h1>"
+                response_headers = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n"
+                response = (response_headers + f"Content-Length: {len(response_body.encode('utf-8'))}\r\n\r\n" + response_body).encode('utf-8')
+                logging.error("404 Not Found")
 
-        # Retornando resposta de recebimento para cliente
-        sock.sendto(b"ACK", (ipCliente, portaCliente))
-        
-    except Exception as e:
-        logging.error(f"Erro no servidor: {e}")
+        else:
+            response_body = "<h1>400 Bad Request</h1>"
+            response_headers = "HTTP/1.1 400 Bad Request\r\nContent-Type: text/html\r\n"
+            response = (response_headers + f"Content-Length: {len(response_body.encode('utf-8'))}\r\n\r\n" + response_body).encode('utf-8')
+            logging.error("400 Bad Request")
+    else:
+        response_body = "<h1>400 Bad Request</h1>"
+        response_headers = "HTTP/1.1 400 Bad Request\r\nContent-Type: text/html\r\n"
+        response = (response_headers + f"Content-Length: {len(response_body.encode('utf-8'))}\r\n\r\n" + response_body).encode('utf-8')
+        logging.error("400 Bad Request")
+
+    client_socket.sendall(response)
+    client_socket.close()
+
+def start_server():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind((IP_LOCAL, PORTA_LOCAL))
+    server_socket.listen(5)
+    print(f"Servidor aberto em {IP_LOCAL}:{PORTA_LOCAL}...")
+
+    while True:
+        client_socket, client_address = server_socket.accept()
+        print(f"Conexão de: {client_address}")
+        logging.info(f"Conexao de: {client_address}")
+        handle_request(client_socket)
+
+if __name__ == "__main__":
+    start_server()

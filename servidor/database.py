@@ -25,6 +25,14 @@ class mensagens(Base):
     IP_Cliente = Column(String(15))
     Porta_Cliente = Column(Integer)
 
+class sensores(Base):
+    __tablename__ = 'sensores'
+
+    ID_Mensagem = Column(Integer, primary_key=True, autoincrement=True)
+    Sensor = Column(String(200))
+    IP_Cliente = Column(String(15))
+    Dados = Column(String(200))
+
 # Criar a tabela no banco se não existir
 Base.metadata.create_all(engine)
 
