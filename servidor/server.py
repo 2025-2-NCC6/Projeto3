@@ -3,11 +3,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import os
 from dotenv import load_dotenv
+import database
 import logging
 
 # IP e porta do servidor
-IP_LOCAL = '0.0.0.0'
-PORTA_LOCAL = 8000
+IP_LOCAL = os.getenv("ip")
+PORTA_LOCAL = int(os.getenv("porta_server"))
 
 # Configuração de logging
 logging.basicConfig(
@@ -19,6 +20,20 @@ logging.basicConfig(
 # IP e porta do cliente
 ipCliente = None
 portaCliente = None
+
+# Conexão com o DB
+load_dotenv()
+
+usuario = os.getenv("usuario")
+senha = os.getenv("senha")
+host = os.getenv("host")
+porta = os.getenv("porta")
+banco = os.getenv("banco")
+
+engine = create_engine(
+    f'mysql+pymysql://{usuario}:{senha}@{host}:{porta}/{banco}',
+    pool_pre_ping=True, pool_recycle=3600
+)
 
 # Função para lidar com os requests
 def handle_request(client_socket):
