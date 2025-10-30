@@ -55,7 +55,9 @@ def handle_request(client_socket):
             method = first_line[0]
             path = first_line[1]
 
-            # Rotas do servidor
+            # ROTAS DO SERVIDOR
+
+            # Rotas de interface
             if method == 'GET' and path == '/':
                 status1 = False
                 status2 = False
@@ -191,7 +193,29 @@ def handle_request(client_socket):
                 response = (response_headers + f"Content-Length: {len(response_body.encode('utf-8'))}\r\n\r\n" + response_body).encode('utf-8')
                 for i in range(len(request_lines)):
                     logging.info(f"Received request:\n{request_lines[i]}")
+
+            # Rotas para o ESP receber dados
+            elif method == 'GET' and path == '/espReceiver':
+                status1 = status1
+                status2 = status2
+
+                if status1:
+                    text1 = 'ON'
+                else:
+                    text1 = 'OFF'
+
+                if status2:
+                    text2 = 'ON'
+                else:
+                    text2 = 'OFF'
+
+                response_body = text1 + " " + text2
+                response_headers = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
+                response = (response_headers + f"Content-Length: {len(response_body.encode('utf-8'))}\r\n\r\n" + response_body).encode('utf-8')
+                for i in range(len(request_lines)):
+                    logging.info(f"Received request:\n{request_lines[i]}")
                     
+            # Lidando com erros e bad requests
             else:
                 response_body = "<h1>404 Not Found</h1>"
                 response_headers = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n"
