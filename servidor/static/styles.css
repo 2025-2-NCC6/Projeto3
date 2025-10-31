@@ -44,7 +44,6 @@ h2 {
     padding: 0 10px;
 }
 
-/* --- Estilos para Botões de Ascensor (Levantar/Descer) --- */
 .button-row {
     display: flex;
     justify-content: center;
@@ -58,45 +57,41 @@ h2 {
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
-    transition: background-color 0.1s ease; /* Transição suave para cores */
+    transition: background-color 0.1s ease;
 }
 
-/* Cor inicial para Levantar/Descer (cinza) */
 .lift-button {
     background-color: #ccc; 
     color: #333;
 }
 
-/* Efeito de escurecer ao segurar o botão (mudar para cinza mais escuro) */
 .lift-button:active {
-    background-color: #a8a8a8; /* Cor mais escura */
+    background-color: #a8a8a8;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* --- Estilos para Botão de Solda (Alternância) --- */
 .toggle-button {
     width: 200px;
     height: 60px;
-    margin: 0 auto; /* Centraliza */
+    margin: 0 auto;
 }
 
 .toggle-button.off {
-    background-color: #ff3333; /* Vermelho para Desligado */
+    background-color: #ff3333;
     color: white;
 }
 
 .toggle-button.on {
-    background-color: #33cc33; /* Verde para Ligado */
+    background-color: #33cc33;
     color: white;
 }
 
 .toggle-button:active {
-    opacity: 0.8; /* Pequena transparência ao clicar */
+    opacity: 0.8;
 }
 
-/* --- Estilos para Indicadores de Ferramentas --- */
 .tools-section {
-    display: block; /* Ocupa a largura total */
+    display: block;
     text-align: center;
 }
 
@@ -116,9 +111,9 @@ h2 {
 }
 
 .status-on {
-    background-color: #33cc33; /* Verde (Estado inicial) */
+    background-color: #33cc33;
 }
 
 .status-off {
-    background-color: #ff3333; /* Vermelho */
+    background-color: #ff3333;
 }

@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import requests
 
 app = Flask(__name__)
-ESP32_IP = "http://192.168.15.15"
+ESP32_IP = "http://172.20.10.5"
 
 solda = False
 ferramentas = {
@@ -39,15 +39,25 @@ def comando_ascensor():
 def toggle_solda():
     global solda
     solda = not solda
+
+    status = request.json.get('action')
     
     status_texto = "LIGADO" if solda else "DESLIGADO"
     print(f"Comando recebido: BANCADA DE SOLDA: {status_texto}")
     
-    return jsonify({
-        'status': 'sucesso', 
-        'novo_estado': solda,
-        'novo_texto': status_texto
-    })
+    try:
+        response = requests.get(f"{ESP32_IP}/solda?estado={status}", timeout=5)
+        response.raise_for_status()
+    
+        return jsonify({
+            'status': 'sucesso', 
+            'novo_estado': solda,
+            'novo_texto': status_texto
+        })
+    
+    except requests.exceptions.RequestException as e:
+        print(f"ERRO ao comunicar com o ESP32: {e}")
+        return jsonify({'status': 'erro', 'mensagem': 'Falha na comunicação com o hardware'}), 500
 
 # Rota ferramentas
 @app.route('/status_ferramentas', methods=['GET'])
