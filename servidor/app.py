@@ -1,5 +1,40 @@
 from flask import Flask, render_template, request, jsonify
 import requests
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import os
+from dotenv import load_dotenv
+import database
+import logging
+
+# IP e porta do servidor
+IP_LOCAL = os.getenv("ip")
+PORTA_LOCAL = int(os.getenv("porta_server"))
+
+# Configuração de logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.FileHandler("servidor.log"), logging.StreamHandler()]
+)
+
+# IP e porta do cliente
+ipCliente = None
+portaCliente = None
+
+# Conexão com o DB
+load_dotenv()
+
+usuario = os.getenv("usuario")
+senha = os.getenv("senha")
+host = os.getenv("host")
+porta = os.getenv("porta")
+banco = os.getenv("banco")
+
+engine = create_engine(
+    f'mysql+pymysql://{usuario}:{senha}@{host}:{porta}/{banco}',
+    pool_pre_ping=True, pool_recycle=3600
+)
 
 app = Flask(__name__)
 ESP32_IP = "http://192.168.15.15"
