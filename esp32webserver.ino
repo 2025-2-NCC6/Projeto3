@@ -1,8 +1,10 @@
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 
-const char* ssid = "SEU_WIFI";
-const char* password = "SUA_SENHA";
+const char* ssid = "vafanculo";
+const char* password = "Yh7xt9bd1h0";
+
+const int SOLDA = 25;
 
 const int MOTOR_SOBE = 26;
 const int MOTOR_DESCE = 27;
@@ -13,12 +15,14 @@ const int FERRAMENTA_3 = 36;
 const int FERRAMENTA_4 = 37;
 
 // Abrindo o servidor na porta 8000
-AsyncWebServer server(8000);
+AsyncWebServer server(80);
 
 bool toolStateToggle = true;
 
 void setup() {
   Serial.begin(115200);
+
+  pinMode(SOLDA, OUTPUT);
 
   pinMode(MOTOR_SOBE, OUTPUT);
   pinMode(MOTOR_DESCE, OUTPUT);
@@ -87,6 +91,30 @@ void setup() {
     jsonResponse += "\"tool-4\": " + String(toolStateToggle ? "true" : "false") + "}";
     
     request->send(200, "application/json", jsonResponse);
+  });
+
+  // Rota solda
+  server.on("/solda_toggle", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("state")) {
+      String state = request->getParam("state")->value();
+      
+      if (state == "ON") {
+        Serial.println("Bancada de Solda: LIGADA");
+        digitalWrite(SOLDA, HIGH);
+        
+      } else if (state == "OFF") {
+        Serial.println("Bancada de Solda: DESLIGADA");
+        digitalWrite(SOLDA, LOW);
+        
+      } else {
+        request->send(400, "text/plain", "Comando de estado invalido (use ON ou OFF)");
+        return;
+      }
+      
+      request->send(200, "text/plain", "Solda status set to " + state);
+    } else {
+      request->send(400, "text/plain", "Parametro 'state' faltando");
+    }
   });
 
   // Rota redirecionamento
