@@ -19,12 +19,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.getElementById('btn-levantar').addEventListener('click', () => {
+    document.getElementById('btn-levantar').addEventListener('mousedown', () => {
         sendCommand('/comando_ascensor', { action: 'levantar' });
     });
+    document.getElementById('btn-levantar').addEventListener('mouseup', () => {
+        sendCommand('/comando_ascensor', { action: 'parar' });
+    });
 
-    document.getElementById('btn-descer').addEventListener('click', () => {
+    document.getElementById('btn-descer').addEventListener('mousedown', () => {
         sendCommand('/comando_ascensor', { action: 'descer' });
+    });
+    document.getElementById('btn-descer').addEventListener('mouseup', () => {
+        sendCommand('/comando_ascensor', { action: 'parar' });
     });
 
 

@@ -4,10 +4,10 @@
 const char* ssid = "vafanculo";
 const char* password = "Yh7xt9bd1h0";
 
-const int SOLDA = 25;
+const int SOLDA = 21;
 
-const int MOTOR_SOBE = 26;
-const int MOTOR_DESCE = 27;
+const int MOTOR_SOBE = 22;
+const int MOTOR_DESCE = 23;
 
 const int FERRAMENTA_1 = 34;
 const int FERRAMENTA_2 = 35;
