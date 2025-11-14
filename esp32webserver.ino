@@ -1,16 +1,16 @@
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 
-const char* ssid = "vafanculo";
-const char* password = "Yh7xt9bd1h0";
+const char* ssid = "";
+const char* password = "";
 
 const int SOLDA = 21;
 
 const int MOTOR_SOBE = 22;
 const int MOTOR_DESCE = 23;
 
-const int FERRAMENTA_1 = 34;
-const int FERRAMENTA_2 = 35;
+const int FERRAMENTA_1 = 4;
+const int FERRAMENTA_2 = 5;
 const int FERRAMENTA_3 = 36;
 const int FERRAMENTA_4 = 37;
 
@@ -27,8 +27,8 @@ void setup() {
   pinMode(MOTOR_SOBE, OUTPUT);
   pinMode(MOTOR_DESCE, OUTPUT);
 
-  pinMode(FERRAMENTA_1, INPUT);
-  pinMode(FERRAMENTA_2, INPUT);
+  pinMode(FERRAMENTA_1, INPUT_PULLDOWN);
+  pinMode(FERRAMENTA_2, INPUT_PULLDOWN);
   pinMode(FERRAMENTA_3, INPUT);
   pinMode(FERRAMENTA_4, INPUT);
 
@@ -79,16 +79,16 @@ void setup() {
   server.on("/status", HTTP_GET, [](AsyncWebServerRequest *request) {
     // Leitura dos pinos de sensores
     bool status_ferramenta_1 = (digitalRead(FERRAMENTA_1) == HIGH);
-    bool Status_ferramenta_2 = (digitalRead(FERRAMENTA_2) == LOW);
-    bool Status_ferramenta_3 = (digitalRead(FERRAMENTA_3) == LOW);
-    bool Status_ferramenta_4 = (digitalRead(FERRAMENTA_4) == LOW);
+    bool status_ferramenta_2 = (digitalRead(FERRAMENTA_2) == HIGH);
+    bool status_ferramenta_3 = (digitalRead(FERRAMENTA_3) == HIGH);
+    bool status_ferramenta_4 = (digitalRead(FERRAMENTA_4) == HIGH);
     
-    toolStateToggle = !toolStateToggle; 
+    toolStateToggle = !toolStateToggle;
 
-    String jsonResponse = "{\"tool-1\": true,";
-    jsonResponse += "\"tool-2\": false,";
-    jsonResponse += "\"tool-3\": true,";
-    jsonResponse += "\"tool-4\": " + String(toolStateToggle ? "true" : "false") + "}";
+    String jsonResponse = "{\"tool-1\": " + String(status_ferramenta_1 ? "true" : "false") + ",";
+    jsonResponse += "\"tool-2\": " + String(status_ferramenta_2 ? "true" : "false") + ",";
+    jsonResponse += "\"tool-3\": " + String(status_ferramenta_3 ? "true" : "false") + ",";
+    jsonResponse += "\"tool-4\": " + String(status_ferramenta_4 ? "true" : "false") + "}";
     
     request->send(200, "application/json", jsonResponse);
   });
