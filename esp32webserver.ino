@@ -9,8 +9,8 @@ const int SOLDA = 21;
 const int MOTOR_SOBE = 22;
 const int MOTOR_DESCE = 23;
 
-const int FERRAMENTA_1 = 4;
-const int FERRAMENTA_2 = 5;
+const int FERRAMENTA_1 = 18;
+const int FERRAMENTA_2 = 19;
 const int FERRAMENTA_3 = 36;
 const int FERRAMENTA_4 = 37;
 
